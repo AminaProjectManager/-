@@ -31,6 +31,7 @@ namespace Виселяк
         {
             text = GetRandomWord();
             hp = 0;
+            hptrue = 0;
             label1.Text = null;
             textBox1.Text = null;
             pictureBox1.Image = null;
@@ -49,26 +50,37 @@ namespace Виселяк
 
         private void button2_Click(object sender, EventArgs e)
         {
-            bool words = false;
-            int j = 0;
-            if (textBox2.Text.Length == 1)
+            if (string.IsNullOrEmpty(textBox2.Text))
             {
+                MessageBox.Show("Пустое поле", "Ошибка");
+                return; // Выходим из метода, если текстовое поле пустое
+            }
+            bool words = false;
+
+            if (textBox2.Text.Length == 1) // Для одной буквы
+            {
+
                 for (int i = 0; i < text.Length; i++)
                 {
                     if (textBox2.Text[0] == text[i])
                     {
-                        words = true;
-                        hptrue++;
-                        word[i] = text[i];
-                        label1.Text = null;
+                        if (word[i] != text[i]) // Проверяем, не была ли эта буква уже угадана
+                        {
+                            words = true;
+                            hptrue++;
+                            word[i] = text[i];
+                            label1.Text = null;
+                        }
                     }
                 }
+
                 if (words == true)
                 {
                     for (int i = 0; i < text.Length; i++)
                     {
                         label1.Text += word[i];
                     }
+
                     if (hptrue == text.Length)
                     {
                         MessageBox.Show("Ты победил!");
@@ -81,17 +93,18 @@ namespace Виселяк
                     hp++;
                     string hpbuff = hp.ToString() + ".png";
                     pictureBox1.Image = new Bitmap(hpbuff);
+
                     if (hp == 10)
                     {
                         MessageBox.Show("Ты проиграл!");
+                        label1.Text = null;
+                        label1.Text = text;
                         losses++;
                         UpdateLossesCounter();
-                        label1.Text = null;
                     }
                 }
-
             }
-            else if (textBox2.Text.Length > 1)
+            else if (textBox2.Text.Length > 2)
             {
                 if (textBox2.Text == text)
                 {
@@ -103,6 +116,7 @@ namespace Виселяк
                     MessageBox.Show("Ты победил!");
                     wins++;
                     UpdateWinsCounter();
+                    label1.Text = text;
                 }
                 else
                 {
@@ -110,11 +124,13 @@ namespace Виселяк
                     string hpbuff = hp.ToString() + ".png";
                     pictureBox1.Image = new Bitmap(hpbuff);
                     MessageBox.Show("Ты проиграл!");
+                    label1.Text = null;
+                    label1.Text = text;
                     losses++;
                     UpdateLossesCounter();
-                    label1.Text = null;
                 }
             }
+
             textBox2.Text = null;
         }
 
@@ -218,11 +234,7 @@ namespace Виселяк
 
         private void textBox2_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
-            {
-                e.Handled = true; // Предотвращает обработку события KeyUp по умолчанию
-                button2.PerformClick(); // Вызов события Click кнопки button2
-            }
+
         }
 
         private void textBox1_KeyUp(object sender, KeyEventArgs e)
